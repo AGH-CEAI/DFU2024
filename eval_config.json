@@ -1,0 +1,10 @@
+{
+  "_eval_config_comment_p1": "Config do ewaluacji dcowolnych par masek: oryginal - predykcja. Gdy podana jest sciezka do split_file_path, ",
+  "_eval_config_comment_p2": "ewaluacja wybierze pliki z testsetu - glownie przeznaczone do testowania modelu kunet",
+  "_eval_config_comment_p3": "w przypadku None - przetestowany zostanie caly dataset",
+
+  "ref_masks_dir": "../../dbs/dfuc24/placeholder_for_masks",
+  "pred_masks_dir": "../../dbs/dfuc24/placeholder_output_masks",
+  "split_file_path": "./db_0_fold_0_out_of_5_debug_files_list.json",
+  "eval_report_output": "./eval_report.csv"
+}
