@@ -11,16 +11,20 @@ def main(config):
     ref_masks_dir = config['ref_masks_dir']
     pred_masks_dir = config['pred_masks_dir']
     split_file_path = config['split_file_path']
+    eval_report_output = config['eval_report_output']
 
     print(f'ref_masks_dir: {ref_masks_dir}')
     print(f'pred_masks_dir: {pred_masks_dir}')
     print(f'split_file_path: {split_file_path}')
+    print(f'eval_report_output: {eval_report_output}')
 
     if split_file_path is not None:
         with open(split_file_path, 'r') as f:
             content = json.load(f)
             test_set = content['test']
             test_set = [mask_file for image_file, mask_file in test_set]
+    else:
+        test_set = None
 
     ref_masks_paths = load_files(ref_masks_dir, test_set=test_set, img_file_pattern="*.png")
     ref_masks_paths = sorted(ref_masks_paths)
@@ -62,7 +66,7 @@ def main(config):
     print(f'Avg dice: {dice}')
 
     report = [header] + report
-    with open(config['eval_report_output'], 'w') as f:
+    with open(eval_report_output, 'w') as f:
         csv_writer = csv.writer(f)
         for line in report:
             csv_writer.writerow(line)
