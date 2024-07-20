@@ -54,7 +54,6 @@ def main(config):
     for db_idx, (imgs_dir, masks_dir) in enumerate(zip(imgs_dirs, masks_dirs)):
         imgs_masks_pairs = load_files_paths(imgs_dir, masks_dir)
 
-
         training, valid, test = get_foldwise_split(db_idx, fold_no, folds_count, imgs_masks_pairs,
                                                    read_from_file=False, save_split_to_file=True,
                                                    with_test_set=extract_test_set[db_idx])
@@ -91,7 +90,7 @@ def main(config):
     history = net.fit(train_gen, val_gen,
                       epochs=epochs,
                       initial_epoch=0,
-                      training_verbosity=2,
+                      training_verbosity=1,
                       additional_callbacks=[improve_masks_callback, early_stopping])
 
     plot_and_save_fig([history.history['loss'], history.history['val_loss']],
