@@ -69,7 +69,7 @@ def main(config):
                    get_experiment_model_name(experiment_name, fold_no), experiment_dir)
 
     train_gen = DataGenerator(train_imgs, train_masks, batch_size, net_input_size,
-                              mask_weaken_modifier, training=True,
+                              training=True,
                               max_queue_size=50,
                               workers=7,
                               use_multiprocessing=False)

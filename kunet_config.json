@@ -1,5 +1,5 @@
 {
-  "script_purpose": "gen_masks",
+  "script_purpose": "training",
   "__script_purpose_comment__" : "training lub gen_masks",
 
 
@@ -8,7 +8,7 @@
   "experiment_type": "kunet_training",
   "__experiment_type_comment__" : "najlepiej nie ruszac",
 
-  "experiment_artifacts_root_dir": "../",
+  "experiment_artifacts_root_dir": "./",
   "__experiment_artifacts_root_dir_comment__" : "najlepiej nie ruszac",
 
 

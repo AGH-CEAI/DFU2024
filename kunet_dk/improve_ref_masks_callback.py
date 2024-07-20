@@ -8,7 +8,7 @@ from utils import norm_img
 
 
 class ImproveRefMasksCallback(keras.callbacks.Callback):
-    model_initial_weights_path = './model_initial_weights.h5'
+    model_initial_weights_path = '/tmp/model_initial_weights.weights.h5'
     def __init__(self, model, eval_step_ratio, network_input_wh,
                  train_images, train_masks, val_imgs, val_masks,
                  mask_weaken_modifier, mask_weaken_modifier_decay,
@@ -30,7 +30,7 @@ class ImproveRefMasksCallback(keras.callbacks.Callback):
         self._epochs_from_last_model_improvement = 0
         self._best_val_loss = np.inf
 
-        self._net.model.save_weigths(self.model_initial_weights_path)
+        self._net.model.save_weights(self.model_initial_weights_path)
 
     def on_epoch_end(self, epoch, logs=None):
         if logs['val_loss'] < self._best_val_loss:
@@ -106,7 +106,7 @@ class ImproveRefMasksCallback(keras.callbacks.Callback):
             probabs /= probabs_overlap_counter
 
             fmask = mask / 255.0
-            new_mask = fmask + probabs[..., np.newaxis] / 2.0
+            new_mask = (fmask + probabs[..., np.newaxis]) / 2.0
             new_mask = ((-200**-new_mask)+1)*3-2
             new_mask[new_mask < 0.0] = 0.0
             masks[i] = np.array(new_mask * 255, dtype=mask.dtype)
