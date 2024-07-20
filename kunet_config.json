@@ -1,5 +1,5 @@
 {
-  "script_purpose": "training",
+  "script_purpose": "gen_masks",
   "__script_purpose_comment__" : "training lub gen_masks",
 
 
@@ -8,7 +8,7 @@
   "experiment_type": "kunet_training",
   "__experiment_type_comment__" : "najlepiej nie ruszac",
 
-  "experiment_artifacts_root_dir": "./",
+  "experiment_artifacts_root_dir": "../",
   "__experiment_artifacts_root_dir_comment__" : "najlepiej nie ruszac",
 
 
@@ -21,7 +21,7 @@
     "net_input_size": [320, 480],
     "__net_input_size_comment__" : "rozmiar wejscia na siec, najlepiej nie ruszac",
 
-    "experiment_name": "increase_masks_weaken_decay",
+    "experiment_name": "test",
     "__experiment_name_comment__" : "najlepiej nie ruszac",
 
 
@@ -61,7 +61,7 @@
     "imgs_dir": "../../../dbs/dfuc24/DFUC2024_train_release/original_train_images",
     "__imgs_dir_comment__": "lokalizacja bazy z ktorej maja byc wygenerowane predykcje masek. Z zalozenia zbior oryginalny z 2022",
 
-    "dest_masks_dir": "../../../dbs/dfuc24/unet_trained_on_maski_andrzeja_with_iterative_improvment",
+    "dest_masks_dir": "../predykcje",
     "__dest_masks_dir_comment__": "lokalizacja gdzie zapisac maski",
 
     "split_file_path": "./db_0_fold_0_out_of_5_debug_files_list.json",

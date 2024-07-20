@@ -36,21 +36,19 @@ def main(config):
         test_set = content['test']
         test_set = [image_file for image_file, mask_file in test_set]
 
-    models = []
-    for fold_no in range(folds_count):
-        model = Unetlike([*net_input_size, 6], get_experiment_model_name(experiment_name, fold_no), '')
-        try:
-            model_file_dir = get_experiment_dir(experiment_artifacts_dir, experiment_name, experiment_type)
-            model_file_name = get_experiment_model_name(experiment_name, fold_no)
-            model.load(os.path.join(model_file_dir, model_file_name))
-            models.append(model)
-        except ValueError:
-            print(f'No model for fold {fold_no}.')
+    experiment_dir = get_experiment_dir(experiment_artifacts_dir, experiment_name, experiment_type)
+    models_paths = glob.glob(os.path.join(experiment_dir, '*.keras'))
 
-    files_paths = load_files(imgs_dir, test_set=test_set)
-    imgs = read_images(files_paths)
+    for model_path in models_paths:
+        model = Unetlike([*net_input_size, 6], '', '')
+        model.load(model_path)
 
-    save_masks(imgs, dest_masks_dir, models, net_input_size, step_ratio)
+        files_paths = load_files(imgs_dir, test_set=test_set)
+        imgs = read_images(files_paths)
+
+        model_file_name = os.path.basename(model_path)
+        save_masks(imgs, os.path.join(dest_masks_dir, model_file_name),
+                   [model], net_input_size, step_ratio)
 
 
 def save_masks(imgs, dest_masks_dir, models, net_input_size, step_ratio):

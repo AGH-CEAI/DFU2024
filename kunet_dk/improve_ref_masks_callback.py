@@ -30,6 +30,8 @@ class ImproveRefMasksCallback(keras.callbacks.Callback):
         self._epochs_from_last_model_improvement = 0
         self._best_val_loss = np.inf
 
+        self._impr_idx = 0
+
         self._net.model.save_weights(self.model_initial_weights_path)
 
     def on_epoch_end(self, epoch, logs=None):
@@ -52,6 +54,9 @@ class ImproveRefMasksCallback(keras.callbacks.Callback):
         if self._mask_weaken_modifier > 1.0:
             self._mask_weaken_modifier = 1.0
         print(f'New patience: {self._patience}, new mask weaken modifier: {self._mask_weaken_modifier}.')
+
+        self._net.save(f'model_impr_{self._impr_idx}.keras')
+        self._impr_idx += 1
 
         self._net.model.load_weights(self.model_initial_weights_path)
 

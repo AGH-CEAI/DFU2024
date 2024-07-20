@@ -54,12 +54,16 @@ def main(config):
     for db_idx, (imgs_dir, masks_dir) in enumerate(zip(imgs_dirs, masks_dirs)):
         imgs_masks_pairs = load_files_paths(imgs_dir, masks_dir)
 
+
         training, valid, test = get_foldwise_split(db_idx, fold_no, folds_count, imgs_masks_pairs,
                                                    read_from_file=False, save_split_to_file=True,
                                                    with_test_set=extract_test_set[db_idx])
+        print(f'loaded {len(training)} training examples from {imgs_dir}')
         train_set += training
         val_set += valid
         test_set += test
+
+    print(f'loaded {len(train_set)} examples in total.')
 
     train_imgs, train_masks = read_imgs_with_masks(train_set)
     val_imgs, val_masks = read_imgs_with_masks(val_set)

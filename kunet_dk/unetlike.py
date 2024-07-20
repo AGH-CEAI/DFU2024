@@ -44,6 +44,9 @@ class Unetlike:
         model = keras.models.load_model(model_path, custom_objects=Unetlike.dependencies)
         self._model = model
 
+    def save(self, file_name):
+        self.model.save(os.path.join(self._model_save_dir, file_name))
+
     def fit(self, train_gen, val_gen, epochs, training_verbosity, initial_epoch, additional_callbacks=None):
         callbacks = [
             keras.callbacks.ModelCheckpoint(

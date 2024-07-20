@@ -1,6 +1,7 @@
 import argparse
 import csv
 import json
+import os
 
 import numpy as np
 
@@ -30,46 +31,51 @@ def main(config):
     ref_masks_paths = sorted(ref_masks_paths)
     ref_masks = read_images(ref_masks_paths)
 
-    pred_masks_paths = load_files(pred_masks_dir, test_set=test_set, img_file_pattern="*.png")
-    pred_masks_paths = sorted(pred_masks_paths)
-    pred_masks = read_images(pred_masks_paths)
+    pred_masks_dirs = os.listdir(pred_masks_dir)
+    for masks_dir in pred_masks_dirs:
+        masks_dir = os.path.join(pred_masks_dir, masks_dir)
+        print('evaluating for {}'.format(masks_dir))
+        pred_masks_paths = load_files(masks_dir, test_set=test_set, img_file_pattern="*.png")
+        pred_masks_paths = sorted(pred_masks_paths)
+        pred_masks = read_images(pred_masks_paths)
 
-    header = ['file name', 'dice image-wise']
-    report = []
-    dice_sum = 0.0
-    for i, (ref_mask_key, pred_mask_key) in enumerate(zip(ref_masks, pred_masks)):
-        assert ref_mask_key == pred_mask_key
+        header = ['file name', 'dice image-wise']
+        report = []
+        dice_sum = 0.0
+        for i, (ref_mask_key, pred_mask_key) in enumerate(zip(ref_masks, pred_masks)):
+            assert ref_mask_key == pred_mask_key
 
-        pred_mask = pred_masks[pred_mask_key]
-        pred_mask = pred_mask.astype(np.float32)
-        thresh = pred_mask.max()/2
-        pred_mask[pred_mask < thresh] = 0.0
-        pred_mask[pred_mask >= thresh] = 1.0
+            pred_mask = pred_masks[pred_mask_key]
+            pred_mask = pred_mask.astype(np.float32)
+            thresh = pred_mask.max()/2
+            pred_mask[pred_mask < thresh] = 0.0
+            pred_mask[pred_mask >= thresh] = 1.0
 
-        ref_mask = ref_masks[ref_mask_key]
-        ref_mask = ref_mask.astype(np.float32)
-        thresh = ref_mask.max()/2
-        ref_mask[ref_mask < thresh] = 0.0
-        ref_mask[ref_mask >= thresh] = 1.0
+            ref_mask = ref_masks[ref_mask_key]
+            ref_mask = ref_mask.astype(np.float32)
+            thresh = ref_mask.max()/2
+            ref_mask[ref_mask < thresh] = 0.0
+            ref_mask[ref_mask >= thresh] = 1.0
 
-        up = (2 * ref_mask * pred_mask).sum()
-        down = (ref_mask + pred_mask).sum()
-        dice = up / down
+            up = (2 * ref_mask * pred_mask).sum()
+            down = (ref_mask + pred_mask).sum()
+            dice = up / down
 
-        dice_sum += dice
+            dice_sum += dice
 
-        report.append([ref_mask_key, dice])
-        print(f'For file {ref_mask_key} dice: {dice}')
+            report.append([ref_mask_key, dice])
+            print(f'For file {ref_mask_key} dice: {dice}')
 
-    dice = dice_sum / (i+1)
-    report.append(['Avg', dice])
-    print(f'Avg dice: {dice}')
+        dice = dice_sum / (i+1)
+        report.append(['Avg', dice])
+        print(f'Avg dice: {dice}')
 
-    report = [header] + report
-    with open(eval_report_output, 'w') as f:
-        csv_writer = csv.writer(f)
-        for line in report:
-            csv_writer.writerow(line)
+        _dir = os.path.basename(masks_dir)
+        report = [header] + report
+        with open(f'{_dir}_{eval_report_output}', 'w') as f:
+            csv_writer = csv.writer(f)
+            for line in report:
+                csv_writer.writerow(line)
 
 
 if __name__ == "__main__":
