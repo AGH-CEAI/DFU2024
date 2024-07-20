@@ -10,7 +10,7 @@ from utils import norm_img
 
 
 class DataGenerator(keras.utils.PyDataset):
-    def __init__(self, images, masks, batch_size, network_input_wh, mask_weaken_modifier=1.0, training=False, *args, **kwargs):
+    def __init__(self, images, masks, batch_size, network_input_wh, training=False, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._batch_size = batch_size
         self._images = images
@@ -26,14 +26,6 @@ class DataGenerator(keras.utils.PyDataset):
 
         self._training = training
         if self._training:
-            for i in range(len(masks)):
-                mask = masks[i]
-                mask[mask >= mask.max()//2] = mask.max()
-                mask[mask < mask.min()//2] = mask.min()
-                mask = mask * mask_weaken_modifier
-                mask = np.array(mask, dtype=np.uint8)
-                masks[i] = mask
-                pass
 
             self._aug = iaa.Sequential([
                 iaa.Fliplr(0.25),

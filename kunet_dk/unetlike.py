@@ -20,11 +20,11 @@ class Unetlike:
         self._model_save_dir = model_save_dir
 
         #  create model
-        self._model = self._create_model(img_size)
+        self._model: keras.Model = self._create_model(img_size)
         self._compile()
 
     @property
-    def model(self):
+    def model(self) -> keras.Model:
         return self._model
 
     def summary(self):

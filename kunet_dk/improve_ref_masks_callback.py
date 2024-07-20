@@ -3,16 +3,18 @@ import numpy as np
 
 from skimage import color
 
+from kunet_dk.unetlike import Unetlike
 from utils import norm_img
 
 
 class ImproveRefMasksCallback(keras.callbacks.Callback):
+    model_initial_weights_path = './model_initial_weights.h5'
     def __init__(self, model, eval_step_ratio, network_input_wh,
                  train_images, train_masks, val_imgs, val_masks,
                  mask_weaken_modifier, mask_weaken_modifier_decay,
                  patience, patience_increase):
         super().__init__()
-        self._model = model # pozniejh to sie chyba nadpisuje jako model kerasa
+        self._net: Unetlike = model
         self._eval_step_ratio = eval_step_ratio
         self._network_input_wh = network_input_wh
         self._train_images = train_images
@@ -27,6 +29,8 @@ class ImproveRefMasksCallback(keras.callbacks.Callback):
 
         self._epochs_from_last_model_improvement = 0
         self._best_val_loss = np.inf
+
+        self._net.model.save_weigths(self.model_initial_weights_path)
 
     def on_epoch_end(self, epoch, logs=None):
         if logs['val_loss'] < self._best_val_loss:
@@ -48,6 +52,8 @@ class ImproveRefMasksCallback(keras.callbacks.Callback):
         if self._mask_weaken_modifier > 1.0:
             self._mask_weaken_modifier = 1.0
         print(f'New patience: {self._patience}, new mask weaken modifier: {self._mask_weaken_modifier}.')
+
+        self._net.model.load_weights(self.model_initial_weights_path)
 
     def _improve_masks(self, imgs, masks):
         size_h, size_w = self._network_input_wh
@@ -99,8 +105,9 @@ class ImproveRefMasksCallback(keras.callbacks.Callback):
             probabs_overlap_counter[probabs_overlap_counter == 0.0] = 1.0
             probabs /= probabs_overlap_counter
 
-            fmask = mask / 255.0 / (self._mask_weaken_modifier-self._mask_weaken_modifier_decay)
-            new_mask = np.sqrt(fmask * probabs[..., np.newaxis])
-            new_mask *= self._mask_weaken_modifier
+            fmask = mask / 255.0
+            new_mask = fmask + probabs[..., np.newaxis] / 2.0
+            new_mask = ((-200**-new_mask)+1)*3-2
+            new_mask[new_mask < 0.0] = 0.0
             masks[i] = np.array(new_mask * 255, dtype=mask.dtype)
             pass

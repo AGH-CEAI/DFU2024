@@ -8,7 +8,7 @@
   "experiment_type": "kunet_training",
   "__experiment_type_comment__" : "najlepiej nie ruszac",
 
-  "experiment_artifacts_root_dir": "./",
+  "experiment_artifacts_root_dir": "../",
   "__experiment_artifacts_root_dir_comment__" : "najlepiej nie ruszac",
 
 
@@ -21,7 +21,7 @@
     "net_input_size": [320, 480],
     "__net_input_size_comment__" : "rozmiar wejscia na siec, najlepiej nie ruszac",
 
-    "experiment_name": "test",
+    "experiment_name": "increase_masks_weaken_decay",
     "__experiment_name_comment__" : "najlepiej nie ruszac",
 
 
@@ -51,10 +51,10 @@
     "epochs": 2000,
 
     "mask_weaken_modifier": 0.55,
-    "mask_weaken_modifier_decay": 0.1,
+    "mask_weaken_modifier_decay": 0.15,
     "patience": 1,
     "patience_increase": 2,
-    "global_patience": 15,
+    "global_patience": 25,
 
     "__gen_masks_section_comment__": "ponizsze atrubuty do generowania maski z modelu kunet",
 
