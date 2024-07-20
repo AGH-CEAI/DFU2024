@@ -4,7 +4,7 @@
   "_eval_config_comment_p3": "w przypadku None - przetestowany zostanie caly dataset",
 
   "ref_masks_dir": "../../../dbs/dfuc24/DFUC2022_train_masks",
-  "pred_masks_dir": "../../../dbs/dfuc24/unet_trained_on_22_dataset",
+  "pred_masks_dir": "../../../dbs/dfuc24/unet_trained_on_maski_andrzeja_with_improvment",
   "split_file_path": "./db_0_fold_0_out_of_5_debug_files_list.json",
   "eval_report_output": "./eval_report.csv"
 }

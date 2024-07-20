@@ -10,7 +10,7 @@ from utils import norm_img
 
 
 class DataGenerator(keras.utils.PyDataset):
-    def __init__(self, images, masks, batch_size, network_input_wh, training=False, *args, **kwargs):
+    def __init__(self, images, masks, batch_size, network_input_wh, mask_weaken_modifier=1.0, training=False, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._batch_size = batch_size
         self._images = images
@@ -26,8 +26,16 @@ class DataGenerator(keras.utils.PyDataset):
 
         self._training = training
         if self._training:
-            self._aug = iaa.Sequential([
+            for i in range(len(masks)):
+                mask = masks[i]
+                mask[mask >= mask.max()//2] = mask.max()
+                mask[mask < mask.min()//2] = mask.min()
+                mask = mask * mask_weaken_modifier
+                mask = np.array(mask, dtype=np.uint8)
+                masks[i] = mask
+                pass
 
+            self._aug = iaa.Sequential([
                 iaa.Fliplr(0.25),
                 iaa.Flipud(0.25),
                 iaa.Sometimes(0.5, iaa.Multiply((0.9, 1.1), per_channel=0.2)),
@@ -44,7 +52,6 @@ class DataGenerator(keras.utils.PyDataset):
         return int(math.floor(self._no_of_examples / self._batch_size))
 
     def __getitem__(self, idx):
-
         slice_idx_from = idx * self._batch_size
         slice_idx_to = (idx + 1) * self._batch_size
         if slice_idx_to > self._no_of_examples:
@@ -52,8 +59,11 @@ class DataGenerator(keras.utils.PyDataset):
 
         current_batch_size = slice_idx_to - slice_idx_from
 
-        x = np.array(self._images[slice_idx_from:slice_idx_to, :, :, :])
-        y = np.array(self._masks[slice_idx_from:slice_idx_to, :, :, :])
+        #x = np.array(self._images[slice_idx_from:slice_idx_to, :, :, :])
+        #y = np.array(self._masks[slice_idx_from:slice_idx_to, :, :, :])
+
+        x = self._images[slice_idx_from:slice_idx_to]
+        y = self._masks[slice_idx_from:slice_idx_to]
 
         if self._training:
             x, y = self._aug(images=x, segmentation_maps=y)
@@ -63,9 +73,8 @@ class DataGenerator(keras.utils.PyDataset):
         for a in range(x_out.shape[0]):
 
             mask = y[a].astype(np.float32)
-            thresh = mask.max() / 2
-            mask[mask < thresh] = 0.0
-            mask[mask >= thresh] = 1.0
+            mask = mask / 255.0
+            mask.dtype = np.float32
 
             labeled_mask = label(mask[:, :, 0])
             regions = regionprops(labeled_mask)
@@ -112,7 +121,13 @@ class DataGenerator(keras.utils.PyDataset):
                 from_w = self._image_wh[1] - self._network_input_wh[1]
                 to_w = self._image_wh[1]
 
-            x_rgb = x[a, from_h:to_h, from_w:to_w, :]
+            x_rgb = x[a][from_h:to_h, from_w:to_w, :]
+            if x_rgb.shape[0] < self._network_input_wh[0]:
+                to_add = self._network_input_wh[0] - x_rgb.shape[0]
+                x_rgb = np.pad(x_rgb, ((0, to_add), (0, 0), (0, 0)), 'constant')
+            if x_rgb.shape[1] < self._network_input_wh[1]:
+                to_add = self._network_input_wh[1] - x_rgb.shape[1]
+                x_rgb = np.pad(x_rgb, ((0, 0), (0, to_add), (0, 0)), 'constant')
 
             x_lab = color.rgb2lab(x_rgb)
 
@@ -124,7 +139,14 @@ class DataGenerator(keras.utils.PyDataset):
             x_out[a, :, :, :3] = x_rgb
             x_out[a, :, :, 3:] = x_lab
 
-            mask = y[a, from_h:to_h, from_w:to_w, :]
+            mask = y[a][from_h:to_h, from_w:to_w, :]
+            if mask.shape[0] < self._network_input_wh[0]:
+                to_add = self._network_input_wh[0] - mask.shape[0]
+                mask = np.pad(mask, ((0, to_add), (0, 0), (0, 0)), 'constant')
+            if mask.shape[1] < self._network_input_wh[1]:
+                to_add = self._network_input_wh[1] - mask.shape[1]
+                mask = np.pad(mask, ((0, 0), (0, to_add), (0, 0)), 'constant')
+
             mask = norm_img(mask.astype(np.float32))
             y_out[a, :, :, :] = mask
 

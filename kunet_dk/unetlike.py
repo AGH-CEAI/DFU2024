@@ -14,7 +14,7 @@ class Unetlike:
 
     def __init__(self, img_size, model_name, model_save_dir):
         #  set some params
-        self._initial_lr = 1e-3
+        self._initial_lr = 1e-4
 
         self._model_file_name = f'{model_name}'
         self._model_save_dir = model_save_dir
@@ -44,12 +44,13 @@ class Unetlike:
         model = keras.models.load_model(model_path, custom_objects=Unetlike.dependencies)
         self._model = model
 
-    def fit(self, train_gen, val_gen, epochs, training_verbosity, initial_epoch):
+    def fit(self, train_gen, val_gen, epochs, training_verbosity, initial_epoch, additional_callbacks=None):
         callbacks = [
             keras.callbacks.ModelCheckpoint(
                 os.path.join(self._model_save_dir, self._model_file_name), save_best_only=True),
-            keras.callbacks.LearningRateScheduler(lr_scheduler)
         ]
+        if additional_callbacks is not None:
+            callbacks.extend(additional_callbacks)
         history = self._model.fit(train_gen,
                                   epochs=epochs+initial_epoch,
                                   initial_epoch=initial_epoch,
@@ -105,13 +106,3 @@ class Unetlike:
 
         model = keras.Model(inputs, outputs)
         return model
-
-
-def lr_scheduler(epoch, lr):
-    if epoch <= 130:
-        lr = 1e-3
-    elif epoch < 650:
-        lr = 1e-4
-    else:
-        lr = 1e-5
-    return lr

@@ -1,6 +1,9 @@
 import argparse
 import os
 
+from tensorflow.python.keras.callbacks import EarlyStopping
+
+from kunet_dk.improve_ref_masks_callback import ImproveRefMasksCallback
 from kunet_dk.unetlike import Unetlike
 from kunet_dk.data_generator import DataGenerator
 
@@ -20,6 +23,12 @@ def main(config):
     experiment_type = config['experiment_type']
     experiment_artifacts_root_dir = config['experiment_artifacts_root_dir']
     net_input_size = config['kunet_dk']['net_input_size']
+    training_eval_step_ratio = config['kunet_dk']['training_eval_step_ratio']
+    mask_weaken_modifier = config['kunet_dk']['mask_weaken_modifier']
+    mask_weaken_modifier_decay = config['kunet_dk']['mask_weaken_modifier_decay']
+    patience = config['kunet_dk']['patience']
+    patience_increase = config['kunet_dk']['patience_increase']
+    global_patience = config['kunet_dk']['global_patience']
 
     experiment_dir = get_experiment_dir(experiment_artifacts_root_dir, experiment_name, experiment_type)
     os.makedirs(experiment_dir, exist_ok=True)
@@ -34,6 +43,12 @@ def main(config):
     print(f'experiment_type: {experiment_type}')
     print(f'experiment_artifacts_dir: {experiment_artifacts_root_dir}')
     print(f'net_input_size: {net_input_size}')
+    print(f'training_eval_step_ratio: {training_eval_step_ratio}')
+    print(f'mask_weaken_modifier: {mask_weaken_modifier}')
+    print(f'mask_weaken_modifier_decay: {mask_weaken_modifier_decay}')
+    print(f'patience: {patience}')
+    print(f'patience_increase: {patience_increase}')
+    print(f'global_patience: {global_patience}')
 
     train_set, val_set, test_set = [], [], []
     for db_idx, (imgs_dir, masks_dir) in enumerate(zip(imgs_dirs, masks_dirs)):
@@ -50,22 +65,30 @@ def main(config):
     val_imgs, val_masks = read_imgs_with_masks(val_set)
     #test_imgs, test_masks = read_imgs_with_masks(test_set)
 
-    train_gen = DataGenerator(train_imgs, train_masks, batch_size, net_input_size, training=True,
-                              max_queue_size=500,
+    net = Unetlike([*net_input_size, 6],
+                   get_experiment_model_name(experiment_name, fold_no), experiment_dir)
+
+    train_gen = DataGenerator(train_imgs, train_masks, batch_size, net_input_size,
+                              mask_weaken_modifier, training=True,
+                              max_queue_size=50,
                               workers=7,
                               use_multiprocessing=False)
     val_gen = DataGenerator(val_imgs, val_masks, batch_size, net_input_size,
-                            max_queue_size=500,
+                            max_queue_size=50,
                             workers=7,
                             use_multiprocessing=False)
 
-    net = Unetlike([*net_input_size, 6],
-                   get_experiment_model_name(experiment_name, fold_no), experiment_dir)
+    improve_masks_callback = ImproveRefMasksCallback(
+        net, training_eval_step_ratio, net_input_size, train_imgs, train_masks, val_imgs, val_masks,
+        mask_weaken_modifier, mask_weaken_modifier_decay, patience, patience_increase)
+
+    early_stopping = EarlyStopping(patience=global_patience)
 
     history = net.fit(train_gen, val_gen,
                       epochs=epochs,
                       initial_epoch=0,
-                      training_verbosity=1)
+                      training_verbosity=1,
+                      additional_callbacks=[improve_masks_callback, early_stopping])
 
     plot_and_save_fig([history.history['loss'], history.history['val_loss']],
                       ['training', 'validation'],

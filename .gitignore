@@ -1,3 +1,4 @@
 .idea
 __pycache__
 *.keras
+test-kunet_training_experiment

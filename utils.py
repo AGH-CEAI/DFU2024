@@ -43,13 +43,14 @@ def read_imgs_with_masks(imgs_masks_pairs):
     for img_path, mask_path in imgs_masks_pairs:
         img = iio.imread(img_path)
         mask = iio.imread(mask_path)
+        mask = mask[..., np.newaxis]
 
         imgs.append(img)
         masks.append(mask)
 
-    imgs = np.array(imgs, dtype=np.uint8)
-    masks = np.array(masks, dtype=np.uint8)
-    masks.shape = [masks.shape[0], masks.shape[1], masks.shape[2], 1]
+    #imgs = np.array(imgs, dtype=np.uint8)
+    #masks = np.array(masks, dtype=np.uint8)
+    #masks.shape = [masks.shape[0], masks.shape[1], masks.shape[2], 1]
     return imgs, masks
 
 
