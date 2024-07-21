@@ -113,7 +113,7 @@ class ImproveRefMasksCallback(keras.callbacks.Callback):
 
             fmask = mask / 255.0
             new_mask = (fmask + probabs[..., np.newaxis]) / 2.0
-            #new_mask = ((-200**-new_mask)+1)*3-2
+            new_mask = ((-200**-new_mask)+1)*3-2
             new_mask[new_mask < 0.0] = 0.0
             masks[i] = np.array(new_mask * 255.0, dtype=mask.dtype)
             pass

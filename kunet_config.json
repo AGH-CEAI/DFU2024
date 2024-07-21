@@ -34,13 +34,11 @@
       "../../../dbs/dfuc24/DFUC2024_train_release/original_train_images",
       "../../../dbs/dfuc24/DFUC2024_train_release/Synthetic_images"
     ],
-    "__imgs_dirs_comment__": "lista lokalizacji folderow z obrazami do uczenia (bo mamy oryginalne obrazy i generowane)",
 
     "masks_dirs": [
-      "../../../dbs/dfuc24/MaskiDlaDarka/dlaDarka/masks/oryginal",
-      "../../../dbs/dfuc24/MaskiDlaDarka/dlaDarka/masks/synthethic"
+      "../../../dbs/dfuc24/masks/oryginal",
+      "../../../dbs/dfuc24/masks/synthethic"
     ],
-    "__masks_dirs_comment__": "lista folderow z maskami odpowiednio do obrazkow",
 
     "extract_test_set" : [true, false],
     "__extract_test_set_comment__": "czy odlozyc testset z danej bazy. Zalozenie jest takie, że dla bazy z oryginalnymi obrazami mozna odlozyc testset (bo mamy referencje z 2022), natomiast dla generowanych obrazow nie trzeba ",
