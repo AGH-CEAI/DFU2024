@@ -90,7 +90,7 @@ def main(config):
     history = net.fit(train_gen, val_gen,
                       epochs=epochs,
                       initial_epoch=0,
-                      training_verbosity=1,
+                      training_verbosity=2,
                       additional_callbacks=[improve_masks_callback, early_stopping])
 
     plot_and_save_fig([history.history['loss'], history.history['val_loss']],
