@@ -112,7 +112,7 @@ class ImproveRefMasksCallback(keras.callbacks.Callback):
             probabs /= probabs_overlap_counter
 
             fmask = mask / 255.0
-            new_mask = (fmask + probabs[..., np.newaxis]) / 2.0
+            new_mask = np.sqrt(fmask * probabs[..., np.newaxis])
             new_mask[new_mask < 0.0] = 0.0
             masks[i] = np.array(new_mask * 255.0, dtype=mask.dtype)
             pass
