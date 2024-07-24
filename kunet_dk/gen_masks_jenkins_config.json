@@ -1,0 +1,12 @@
+{
+  "kunet_dk": {
+    "imgs_dir": "../../../dbs/dfuc24/DFUC2024_test_release",
+    "dest_masks_dir": "../predykcje_test_z_testesetm_test",
+
+    "split_file_path": null,
+    "net_input_size": [320, 480],
+    "step_ratio": 10,
+    "model_file_path": ""
+
+  }
+}

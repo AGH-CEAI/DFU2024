@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+import argparse
 import json
 import os
 import glob
@@ -14,44 +15,36 @@ from skimage.measure import label, regionprops
 
 
 def main(config):
-    folds_count = config['kunet_dk']['folds_count']
     imgs_dir = config['kunet_dk']['imgs_dir']
     dest_masks_dir = config['kunet_dk']['dest_masks_dir']
-    experiment_name = config['kunet_dk']['experiment_name']
-    experiment_type = config['experiment_type']
-    experiment_artifacts_dir = config['experiment_artifacts_root_dir']
-    net_input_size = config["kunet_dk"]["net_input_size"]
     step_ratio = config["kunet_dk"]["step_ratio"]
     split_file_path = config['kunet_dk']['split_file_path']
+    model_file_path = config['kunet_dk']['model_file_path']
+    net_input_size = config['kunet_dk']['net_input_size']
 
-    print(f'folds_count: {folds_count}')
     print(f'imgs_dir: {imgs_dir}')
     print(f'masks_dir: {dest_masks_dir}')
-    print(f'experiment_name: {experiment_name}')
-    print(f'experiment_type: {experiment_type}')
-    print(f'experiment_artifacts_dir: {experiment_artifacts_dir}')
+    print(f'model_file_path: {model_file_path}')
+    print(f'net_input_size: {net_input_size}')
+
     try:
         with open(split_file_path, 'r') as f:
             content = json.load(f)
             test_set = content['test']
             test_set = [image_file for image_file, mask_file in test_set]
+            print(f'zaladowano test set split z {split_file_path}')
     except Exception as e:
         test_set = None
+        print('brak test set split, generowanie masek dla calego podanego zbioru')
 
-    #experiment_dir = get_experiment_dir(experiment_artifacts_dir, experiment_name, experiment_type)
-    #models_paths = glob.glob(os.path.join(experiment_dir, '*.keras'))
-    models_paths = ['/home/darekk/dev/projects/dfuc24/build_local_z_testsetem_model0/model_impr_0.keras']
-    for model_path in models_paths:
-        model = Unetlike([*net_input_size, 6], '', '')
-        model.load(model_path)
-        model = model.model
+    model = Unetlike([*net_input_size, 6], '', '')
+    model.load(model_file_path)
+    model = model.model
 
-        files_paths = load_files(imgs_dir, test_set=test_set)
-        imgs = read_images(files_paths)
+    files_paths = load_files(imgs_dir, test_set=test_set)
+    imgs = read_images(files_paths)
 
-        model_file_name = os.path.basename(model_path)
-        save_masks(imgs, os.path.join(dest_masks_dir, model_file_name),
-                   [model], net_input_size, step_ratio)
+    save_masks(imgs, dest_masks_dir,[model], net_input_size, step_ratio)
 
 
 def save_masks(imgs, dest_masks_dir, models, net_input_size, step_ratio):
@@ -136,4 +129,7 @@ def save_masks(imgs, dest_masks_dir, models, net_input_size, step_ratio):
 
 
 if __name__ == "__main__":
-    main()
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument("-c", "--config", type=str, required=True)
+    args = argparser.parse_args()
+    main(args.config)

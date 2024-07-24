@@ -1,5 +1,5 @@
 {
-  "script_purpose": "training",
+  "script_purpose": "gen_masks",
   "__script_purpose_comment__" : "training lub gen_masks",
 
 
@@ -32,15 +32,17 @@
 
     "imgs_dirs": [
       "../../../dbs/dfuc24/DFUC2024_train_release/original_train_images",
-      "../../../dbs/dfuc24/DFUC2024_train_release/Synthetic_images"
+      "../../../dbs/dfuc24/DFUC2024_train_release/Synthetic_images",
+      "../../../dbs/dfuc24/DFUC2024_test_release"
     ],
 
     "masks_dirs": [
       "../../../dbs/dfuc24/masks/oryginal",
-      "../../../dbs/dfuc24/masks/synthethic"
+      "../../../dbs/dfuc24/masks/synthethic",
+      "../../../dbs/dfuc24/test_masks"
     ],
 
-    "extract_test_set" : [true, false],
+    "extract_test_set" : [true, false, false],
     "__extract_test_set_comment__": "czy odlozyc testset z danej bazy. Zalozenie jest takie, że dla bazy z oryginalnymi obrazami mozna odlozyc testset (bo mamy referencje z 2022), natomiast dla generowanych obrazow nie trzeba ",
 
     "training_eval_step_ratio": 4,
@@ -50,19 +52,19 @@
 
     "mask_weaken_modifier": 0.55,
     "mask_weaken_modifier_decay": 0.15,
-    "patience": 1,
+    "patience": 10,
     "patience_increase": 2,
     "global_patience": 25,
 
     "__gen_masks_section_comment__": "ponizsze atrubuty do generowania maski z modelu kunet",
 
-    "imgs_dir": "../../../dbs/dfuc24/DFUC2024_train_release/original_train_images",
+    "imgs_dir": "../../../dbs/dfuc24/DFUC2024_test_release",
     "__imgs_dir_comment__": "lokalizacja bazy z ktorej maja byc wygenerowane predykcje masek. Z zalozenia zbior oryginalny z 2022",
 
-    "dest_masks_dir": "../predykcje",
+    "dest_masks_dir": "../predykcje_test_z_testesetm_test",
     "__dest_masks_dir_comment__": "lokalizacja gdzie zapisac maski",
 
-    "split_file_path": "./db_0_fold_0_out_of_5_debug_files_list.json",
+    "split_file_path": null,
     "__split_file_path_comment__": "plik z podzialem na train/val/test wygenerowany podczas uczenia (a najlepiej z repo wziety zeby mozna bylo porwnac wyniki miedzy eksperymentami)",
 
     "step_ratio": 10,
