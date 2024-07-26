@@ -6,7 +6,7 @@ import os
 import glob
 
 from kunet_dk.unetlike import Unetlike
-from utils import norm_img, get_experiment_model_name, get_experiment_dir, read_images, load_files
+from utils import norm_img, get_experiment_model_name, get_experiment_dir, read_images, load_files, read_config
 from tensorflow import keras
 from skimage import color
 import imageio.v3 as iio
@@ -132,4 +132,5 @@ if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
     argparser.add_argument("-c", "--config", type=str, required=True)
     args = argparser.parse_args()
-    main(args.config)
+    config = read_config(args.config)
+    main(config)
