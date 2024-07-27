@@ -38,9 +38,9 @@ def main(config):
     except Exception as e:
         test_set = None
 
-    #experiment_dir = get_experiment_dir(experiment_artifacts_dir, experiment_name, experiment_type)
-    #models_paths = glob.glob(os.path.join(experiment_dir, '*.keras'))
-    models_paths = ['/home/darekk/dev/projects/dfuc24/build_local_z_testsetem_model0/model_impr_0.keras']
+    experiment_dir = get_experiment_dir(experiment_artifacts_dir, experiment_name, experiment_type)
+    models_paths = glob.glob(os.path.join(experiment_dir, '*.keras'))
+    #models_paths = ['/home/darekk/dev/projects/dfuc24/build_local_z_testsetem_model0/model_impr_0.keras']
     for model_path in models_paths:
         model = Unetlike([*net_input_size, 6], '', '')
         model.load(model_path)
