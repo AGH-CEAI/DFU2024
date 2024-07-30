@@ -33,7 +33,7 @@ class ImproveRefMasksCallback(keras.callbacks.Callback):
 
         self._impr_idx = 0
 
-        self._net.model.save_weights(self.model_initial_weights_path)
+        #self._net.model.save_weights(self.model_initial_weights_path)
 
     def on_epoch_end(self, epoch, logs=None):
         if logs['val_loss'] < self._best_val_loss:
@@ -59,7 +59,7 @@ class ImproveRefMasksCallback(keras.callbacks.Callback):
         self._net.save(f'model_impr_{self._impr_idx}.keras')
         self._impr_idx += 1
 
-        self._net.model.load_weights(self.model_initial_weights_path)
+        #self._net.model.load_weights(self.model_initial_weights_path)
 
     def _improve_masks(self, imgs, masks):
         size_h, size_w = self._network_input_wh
