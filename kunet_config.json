@@ -1,34 +1,18 @@
 {
   "script_purpose": "gen_masks",
-  "__script_purpose_comment__" : "training lub gen_masks",
-
-
-  "__kunet_config_comment__" : "konfig uczenia i generowania masek dla modelu z dfu22",
 
   "experiment_type": "kunet_training",
-  "__experiment_type_comment__" : "najlepiej nie ruszac",
 
   "experiment_artifacts_root_dir": "../",
-  "__experiment_artifacts_root_dir_comment__" : "najlepiej nie ruszac",
-
 
   "kunet_dk": {
-    "__general_kunet_comment__": "ponizej sekcja ogolnych konfigow skryptu",
-
     "folds_count": 5,
-    "__folds_count_comment__" : "ilosc potencjalny foldow, najlepiej nie ruszac",
 
     "net_input_size": [320, 480],
-    "__net_input_size_comment__" : "rozmiar wejscia na siec, najlepiej nie ruszac",
 
     "experiment_name": "test",
-    "__experiment_name_comment__" : "najlepiej nie ruszac",
-
-
-    "__training_kunet_comment__": "ponizej sekcja konfigow skryptu uczacego",
 
     "fold_no": 0,
-    "__fold_no_comment__" : "numer foldu. Na etapie eksperymentow najlepiej testowac na 0. Do ewaluacji na zbiorze dfu24, mozna wyuczyc 5 modeli (0-4)",
 
     "imgs_dirs": [
       "../../../dbs/dfuc24/DFUC2024_train_release/original_train_images",
@@ -43,31 +27,20 @@
     ],
 
     "extract_test_set" : [true, false, false],
-    "__extract_test_set_comment__": "czy odlozyc testset z danej bazy. Zalozenie jest takie, że dla bazy z oryginalnymi obrazami mozna odlozyc testset (bo mamy referencje z 2022), natomiast dla generowanych obrazow nie trzeba ",
 
     "training_eval_step_ratio": 4,
 
     "batch_size": 16,
     "epochs": 2000,
 
-    "mask_weaken_modifier": 0.55,
-    "mask_weaken_modifier_decay": 0.15,
     "patience": 10,
     "patience_increase": 2,
     "global_patience": 25,
 
-    "__gen_masks_section_comment__": "ponizsze atrubuty do generowania maski z modelu kunet",
-
     "imgs_dir": "../../../dbs/dfuc24/DFUC2024_test_release",
-    "__imgs_dir_comment__": "lokalizacja bazy z ktorej maja byc wygenerowane predykcje masek. Z zalozenia zbior oryginalny z 2022",
-
     "dest_masks_dir": "../predykcje_test_z_testesetm_test",
-    "__dest_masks_dir_comment__": "lokalizacja gdzie zapisac maski",
-
     "split_file_path": null,
-    "__split_file_path_comment__": "plik z podzialem na train/val/test wygenerowany podczas uczenia (a najlepiej z repo wziety zeby mozna bylo porwnac wyniki miedzy eksperymentami)",
 
-    "step_ratio": 10,
-    "__step_ratio_comment__": "chyba krok nakladania sie wycinkow przy generopwaniu masek, ale lepiej nie ruszac"
+    "step_ratio": 10
   }
 }
